@@ -22,22 +22,11 @@ const SplashScreen = ({navigation}: TProps) => {
     const timer = setTimeout(() => {
       unsubscribe = auth().onAuthStateChanged(async firebaseUser => {
         if (firebaseUser) {
-          const result = await getAdmin(firebaseUser.uid);
-          if (result instanceof Error) {
-            Snackbar.show({
-              text: result.message,
-              duration: Snackbar.LENGTH_INDEFINITE,
-              backgroundColor: COLORS.grey,
-              action: {
-                text: 'Retry',
-                textColor: COLORS.green,
-                onPress: () => setRetry(prevState => !prevState),
-              },
-            });
-          } else {
-            authContext.setAdmin(result);
-            navigation.replace('Home');
-          }
+          authContext.onAuthSuccess(
+            firebaseUser.uid,
+            () => setRetry(prevState => !prevState),
+            () => navigation.replace('Home'),
+          );
         } else {
           navigation.replace('Auth');
         }
